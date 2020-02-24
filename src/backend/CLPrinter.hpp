@@ -52,6 +52,7 @@ struct CLPrinter : public GenericCPrinter {
 
 public:
   bool useFloat;
+  bool inConstantDec;
 
 private:
   AST::Script &script;

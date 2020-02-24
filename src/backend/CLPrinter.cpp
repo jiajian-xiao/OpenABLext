@@ -54,33 +54,35 @@ static bool typeRequiresStorage(Type type) {
 }
 
 static void printTypeCtor(CLPrinter &p, const AST::CallExpression &expr) {
-  Type t = expr.type;
-  if (t.isVec()) {
-    size_t numArgs = expr.args->size();
-    p << "flo" << t.getVecLen() << "_"
-      << (numArgs == 1 ? "fill" : "create");
-    p << "(";
-    p.printArgs(expr);
-    p << ")";
-//    if (numArgs == 1){
-//      p << "{";
-//      for  (int j=0;j<t.getVecLen()-1;j++) {
-//          p.printArgs(expr);
-//          p << ",";
-//      }
-//      p.printArgs(expr);
-//      p << "}";
-//    } else {
-//        p << "{";
-//        p.printArgs(expr);
-//        p << "}";
-//    }
-  } else {
-      if (t.isFloat() && !p.useFloat)
-        p << "( double ) " << *(*expr.args)[0];
-      else
-        p << "(" << t << ") " << *(*expr.args)[0];
-  }
+    Type t = expr.type;
+    if (t.isVec() && !p.inConstantDec) {
+        size_t numArgs = expr.args->size();
+        p << "flo" << t.getVecLen() << "_"
+          << (numArgs == 1 ? "fill" : "create");
+        p << "(";
+        p.printArgs(expr);
+        p << ")";
+    } else if (t.isVec() && p.inConstantDec) {
+        size_t numArgs = expr.args->size();
+        if (numArgs == 1){
+            p << "{";
+            for  (int j=0;j<t.getVecLen()-1;j++) {
+                p.printArgs(expr);
+                p << ",";
+            }
+            p.printArgs(expr);
+            p << "}";
+        } else {
+            p << "{";
+            p.printArgs(expr);
+            p << "}";
+        }
+    } else {
+        if (t.isFloat() && !p.useFloat)
+            p << "( double ) " << *(*expr.args)[0];
+        else
+            p << "(" << t << ") " << *(*expr.args)[0];
+    }
 }
 void CLPrinter::print(const AST::CallExpression &expr) {
   if (expr.isCtor()) {
@@ -966,9 +968,11 @@ void CLPrinter::print(const AST::FunctionDeclaration &decl) {
 }
 
 void CLPrinter::print(const AST::ConstDeclaration &decl) {
+    inConstantDec = true;
     *this << "__constant " << *decl.type << " " << *decl.var
           << (decl.isArray ? "[]" : "")
           << " = " << *decl.expr << ";";
+    inConstantDec = false;
 }
 
 void CLPrinter::print(const AST::Script &script) {
