@@ -570,6 +570,9 @@ void CLPrinter::print(const AST::SimulateStatement &stmt) {
                                 *this << ",  __global uint2 *rngState_" << type;
                             else
                                 *this << ",  __global uint2 *rngState_" << type <<", ";
+                        } else {
+                            if (cc != agentTypes.size()-1)
+                                *this << ", ";
                         }
                         if (cc == agentTypes.size()-1)
                             *this << ") {" << indent << nl;
@@ -601,9 +604,9 @@ void CLPrinter::print(const AST::SimulateStatement &stmt) {
                         for (auto type:agentTypes) {
                             *this << "buff_" << type << ", "
                                   << "len_" << type << ", "
-                                  << envName << "_" << type;
+                                  << envName << "_" << type << ", ";
                         }
-                        *this << ", &" << bufLabel << ", &" << dbufLabel
+                        *this << "&" << bufLabel << ", &" << dbufLabel
                               << ");" << nl;
                     }
 
@@ -635,6 +638,9 @@ void CLPrinter::print(const AST::SimulateStatement &stmt) {
                                 *this << ",  __global uint2 *rngState_" << type;
                             else
                                 *this << ",  __global uint2 *rngState_" << type <<", ";
+                        } else {
+                            if (cc != agentTypes.size()-1)
+                                *this << ", ";
                         }
                         if (cc == agentTypes.size()-1)
                             *this << ") {" << indent << nl;
@@ -666,9 +672,9 @@ void CLPrinter::print(const AST::SimulateStatement &stmt) {
                         for (auto type:agentTypes) {
                             *this << "buff_" << type << ", "
                                   << "len_" << type << ", "
-                                  << envName << "_" << type;
+                                  << envName << "_" << type << ", ";
                         }
-                        *this << ", &" << bufLabel << ", &" << dbufLabel
+                        *this << "&" << bufLabel << ", &" << dbufLabel
                               << ");" << nl;
                     }
 

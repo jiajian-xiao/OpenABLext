@@ -1501,14 +1501,14 @@ void AnalysisVisitor::leave(AST::CallExpression &expr) {
   // FlameGPU needs to know
   if (expr.name == "random" || expr.name == "randomInt" || expr.name == "MWC64X") {
     currentFunc->usesRng = true;
-    if (currentFunc->isAnyStep())
+    if (currentFunc->isAnyStep() && expr.name == "MWC64X")
         script.usesRng = true;
   }
 
   // We might be using an RNG indirectly
   if (sig->decl && sig->decl->usesRng) {
     currentFunc->usesRng = true;
-    if (currentFunc->isAnyStep())
+    if (currentFunc->isAnyStep() && expr.name == "MWC64X")
         script.usesRng = true;
   }
 };
