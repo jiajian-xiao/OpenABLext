@@ -133,17 +133,18 @@ abl_float random_float(abl_float min, abl_float max) {
 }
 
 int random_int(int min, int max) {
-    unsigned n = max-min+1;
-    if ((n & (n-1)) == 0) {
-        return xorshift128plus() & (n - 1);
-    }
+    ulong seed = get_global_id(0);
+    if (seed == 0 ) seed =1;
+    seed = (seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
+    uint result1 = seed >> 16;
+    seed = (seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
+    uint result2 = seed >> 16;
+    int res;
+    if (result1 < result2)
+        res = (abl_float)result1/(abl_float)result2;
+    else
+        res = (abl_float)result2/(abl_float)result1;
 
-    // Not the fastest way to do this
-    unsigned r = UINT_MAX % n;
-    unsigned x;
-    do {
-        x = xorshift128plus();
-    } while (x >= UINT_MAX - r);
-    return min + x % n;
+    return min +  (abl_float) (res) * (max - min);
 }
 
