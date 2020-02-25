@@ -449,8 +449,10 @@ void CLHPrinter::print(const AST::SimulateStatement &stmt) {
                     *this << "ret |= clSetKernelArg(kernel_" << type << "_" << stepFuncCount << ", " << tmpSizeStringCount + 4
                           << ", sizeof(cl_mem), &" << agentLabel
                           << "MemObjRng_" << type << ");" << nl;
+                    tmpSizeStringCount = tmpSizeStringCount + 5;
+                } else {
+                    tmpSizeStringCount = tmpSizeStringCount + 4;
                 }
-                tmpSizeStringCount = tmpSizeStringCount + 5;
             }
             stepFuncCount++;
         }
